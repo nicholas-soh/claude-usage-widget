@@ -10,6 +10,11 @@ USAGE_URL="https://claude.ai/new#settings/usage"
 CACHE_FILE="$HOME/.claude-usage-cache.json"
 TMPFILE=$(mktemp)
 
+# Only talk to Island if it's already running — avoids launching it
+if ! pgrep -x "Island" > /dev/null 2>&1; then
+    echo '{"error":"no_tab"}' > "$TMPFILE"
+else
+
 osascript 2>/dev/null << 'APPLESCRIPT' > "$TMPFILE"
 tell application "Island"
     set claudeTab to null
@@ -56,6 +61,8 @@ tell application "Island"
     "
 end tell
 APPLESCRIPT
+
+fi  # end Island running check
 
 python3 << EOF
 import json, sys, datetime, os
