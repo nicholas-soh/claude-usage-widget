@@ -39,6 +39,12 @@ Or copy it in one command:
 cp claude-usage.1h.sh ~/Library/Application\ Support/xbar/plugins/
 ```
 
+> **If xbar shows an error about the script not being executable**, run:
+> ```bash
+> chmod +x ~/Library/Application\ Support/xbar/plugins/claude-usage.1h.sh
+> ```
+> Then click **Refresh** in xbar. This can happen when the file is downloaded directly from GitHub rather than cloned.
+
 ## Usage
 
 - **Menu bar** shows the percentage of the billing cycle elapsed, refreshed every hour, colour-coded by threshold.
