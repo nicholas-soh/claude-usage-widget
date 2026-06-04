@@ -1,45 +1,47 @@
-# Claude Usage Widget for Übersicht
+# Claude Usage Widget for xbar
 
-A macOS desktop widget that shows your current billing cycle progress and links directly to your Claude usage page.
+A macOS menu bar plugin that shows your Claude billing cycle progress and links directly to your usage page.
 
-## Features
+## What it looks like
 
-- Shows current month and billing cycle progress bar
-- Displays days remaining in the cycle
-- Click "Check usage →" to open [claude.ai/settings/limits](https://claude.ai/settings/limits) directly
-- Dark frosted-glass theme
+```
+☁ 18d   ← in your menu bar (days left in cycle)
+
+Clicking opens a dropdown:
+─────────────────────
+Claude Usage
+June 2026
+─────────────────────
+██████░░░░  60%
+18 days left in billing cycle
+─────────────────────
+Open Usage Page
+Refresh
+```
 
 ## Installation
 
-1. Download and install [Übersicht](https://tracesof.net/uebersicht/) (free, not on the App Store — download from the website).
-2. Open Übersicht — it will create a widgets folder automatically.
-3. Copy `claude-usage-widget.jsx` into `~/Library/Application Support/Übersicht/widgets/`.
-4. The widget appears on your desktop immediately.
+1. Download and install [xbar](https://xbarapp.com) (free, direct download — not on the App Store).
+2. Open xbar — it will prompt you to choose a plugins folder (default is fine).
+3. Copy `claude-usage.1h.sh` into your xbar plugins folder (`~/Library/Application Support/xbar/plugins/`).
+4. xbar picks it up automatically — you'll see **☁ Xd** appear in your menu bar.
 
-To move the widget, edit the `left` and `top` values at the top of the `className` block:
-
-```js
-export const className = `
-  left: 20px;   /* distance from left edge */
-  top: 20px;    /* distance from top edge */
-  ...
-`
+Or copy it in one command:
+```bash
+cp claude-usage.1h.sh ~/Library/Application\ Support/xbar/plugins/
 ```
 
 ## Usage
 
-- The progress bar fills as the month progresses (time-based, not usage-based — Claude doesn't expose live usage data via a public API).
-- Click the widget link to jump straight to your Claude usage page.
-- The widget refreshes every hour automatically.
+- **Menu bar** shows days remaining in your billing cycle, refreshed every hour.
+- **Click** the menu bar item to see the progress bar and dropdown.
+- **"Open Usage Page"** jumps to [claude.ai/settings/limits](https://claude.ai/settings/limits) for your actual usage %.
+- The progress bar is time-based (days elapsed), not usage-based — Claude doesn't expose live usage data via a public API.
 
-## Customization
+## Requirements
 
-Edit the color values in the `className` block:
-
-```js
-color: #d97706;     /* amber accent — change to any hex */
-background: rgba(15, 15, 15, 0.88);  /* background opacity */
-```
+- macOS with [xbar](https://xbarapp.com) installed
+- Python 3 (pre-installed on macOS)
 
 ## License
 
