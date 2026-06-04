@@ -1,37 +1,44 @@
-# Claude Usage Widget for Scriptable
+# Claude Usage Widget for Übersicht
 
-A macOS/iOS widget that shows your current billing cycle progress and links directly to your Claude usage page.
-
-![Widget preview: dark background, amber "Claude" title, month progress bar, days remaining, tap-to-open link](preview.png)
+A macOS desktop widget that shows your current billing cycle progress and links directly to your Claude usage page.
 
 ## Features
 
 - Shows current month and billing cycle progress bar
 - Displays days remaining in the cycle
-- Tap to open [claude.ai/settings/limits](https://claude.ai/settings/limits) directly
-- Dark theme matching Claude's aesthetic
+- Click "Check usage →" to open [claude.ai/settings/limits](https://claude.ai/settings/limits) directly
+- Dark frosted-glass theme
 
 ## Installation
 
-1. Install [Scriptable](https://apps.apple.com/app/scriptable/id1405459188) (free) from the Mac App Store or iOS App Store.
-2. Copy the contents of `claude-usage-widget.js` into a new script in Scriptable.
-3. Name the script **Claude Usage Widget**.
-4. On macOS: right-click the desktop → **Edit Widgets** → find Scriptable → add a **Small** widget → configure it to use **Claude Usage Widget**.
-5. On iOS: long-press the home screen → **+** → Scriptable → Small → select **Claude Usage Widget**.
+1. Download and install [Übersicht](https://tracesof.net/uebersicht/) (free, not on the App Store — download from the website).
+2. Open Übersicht — it will create a widgets folder automatically.
+3. Copy `claude-usage-widget.jsx` into `~/Library/Application Support/Übersicht/widgets/`.
+4. The widget appears on your desktop immediately.
+
+To move the widget, edit the `left` and `top` values at the top of the `className` block:
+
+```js
+export const className = `
+  left: 20px;   /* distance from left edge */
+  top: 20px;    /* distance from top edge */
+  ...
+`
+```
 
 ## Usage
 
 - The progress bar fills as the month progresses (time-based, not usage-based — Claude doesn't expose live usage data via a public API).
-- Tap the widget to jump straight to your Claude usage page.
-- To see your actual usage %, check [claude.ai/settings/limits](https://claude.ai/settings/limits).
+- Click the widget link to jump straight to your Claude usage page.
+- The widget refreshes every hour automatically.
 
 ## Customization
 
-Edit the color constants at the top of the script:
+Edit the color values in the `className` block:
 
 ```js
-const ACCENT_COLOR = new Color("#d97706")  // amber — change to any hex
-const BG_COLOR     = new Color("#0f0f0f")  // near-black background
+color: #d97706;     /* amber accent — change to any hex */
+background: rgba(15, 15, 15, 0.88);  /* background opacity */
 ```
 
 ## License
