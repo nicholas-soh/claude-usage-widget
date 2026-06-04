@@ -21,15 +21,22 @@ filled = round(progress / 10)
 empty = 10 - filled
 bar = "█" * filled + "░" * empty
 
+if progress <= 50:
+    color = "#22c55e"  # green
+elif progress <= 80:
+    color = "#f97316"  # orange
+else:
+    color = "#ef4444"  # red
+
 # Menu bar line
-print(f"☁ {days_left}d | color=#d97706 size=13")
+print(f"☁ {progress}% | color={color} size=13")
 print("---")
 print(f"Claude Usage | color=#ffffff size=14 href=https://claude.ai/settings/limits")
 print(f"{month_name} | color=#9ca3af size=12")
 print("---")
-print(f"{bar}  {progress}% | color=#d97706 font=Menlo size=12")
+print(f"{bar}  {progress}% | color={color} font=Menlo size=12")
 print(f"{days_left} days left in billing cycle | color=#9ca3af size=12")
 print("---")
-print("Open Usage Page | href=https://claude.ai/settings/limits color=#d97706")
+print("Open Usage Page | href=https://claude.ai/settings/limits color=#3b82f6")
 print("Refresh | refresh=true color=#6b7280")
 EOF
