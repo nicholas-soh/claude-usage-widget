@@ -50,11 +50,13 @@ The plugin runs JavaScript inside your existing claude.ai browser tab to call th
 ## Installation
 
 1. Download and install [xbar](https://xbarapp.com).
-2. Run the install script — it downloads the plugin, sets the executable bit, and puts it in the right place:
+2. In Island, enable JavaScript from Apple Events:
+   `View → Developer → Allow JavaScript from Apple Events`
+3. Run the install script — it downloads the plugin, sets the executable bit, and puts it in the right place:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/nicholas-soh/claude-usage-widget/main/install.sh | bash
 ```
-3. xbar picks it up automatically — you'll see **☁ X%** in your menu bar.
+4. xbar picks it up automatically — you'll see **☁ X%** in your menu bar.
 
 ## License
 
