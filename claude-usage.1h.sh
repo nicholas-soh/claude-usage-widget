@@ -83,7 +83,7 @@ def render(pct, used, limit, currency, cached=False):
     print("---")
     print(f"{bar}  {pct}% | color={c} font=Menlo size=12")
     if used is not None and limit is not None:
-        print(f"\${used:,.0f} of \${limit:,.0f} {currency} used | color=#9ca3af size=11")
+        print(f"\${used:,.2f} of \${limit:,.2f} {currency} used | color=#9ca3af size=11")
     print("---")
     print(f"Open Usage Page | href={USAGE_URL} color=#3b82f6")
     print("Refresh | refresh=true color=#6b7280")
@@ -138,7 +138,9 @@ currency    = extra.get("currency", "USD")
 if utilization is None:
     show_fallback(); sys.exit(0)
 
-pct = round(utilization, 1)
+pct   = round(utilization, 1)
+used  = used / 100 if used is not None else None
+limit = limit / 100 if limit is not None else None
 save_cache({"pct": pct, "used": used, "limit": limit, "currency": currency})
 render(pct, used, limit, currency, cached=False)
 EOF

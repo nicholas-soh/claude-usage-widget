@@ -50,17 +50,11 @@ The plugin runs JavaScript inside your existing claude.ai browser tab to call th
 ## Installation
 
 1. Download and install [xbar](https://xbarapp.com).
-2. Copy `claude-usage.1h.sh` into your xbar plugins folder:
+2. Run the install script — it downloads the plugin, sets the executable bit, and puts it in the right place:
 ```bash
-cp claude-usage.1h.sh ~/Library/Application\ Support/xbar/plugins/
+curl -fsSL https://raw.githubusercontent.com/nicholas-soh/claude-usage-widget/main/install.sh | bash
 ```
 3. xbar picks it up automatically — you'll see **☁ X%** in your menu bar.
-
-> **If xbar shows a "not executable" error**, run:
-> ```bash
-> chmod +x ~/Library/Application\ Support/xbar/plugins/claude-usage.1h.sh
-> ```
-> Then click **Refresh** in xbar.
 
 ## License
 
