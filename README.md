@@ -1,25 +1,25 @@
 # Claude Usage Widget for xbar
 
-A macOS menu bar plugin that shows how much of your **extra usage credit** budget you've spent this month, read live from your own claude.ai session.
+A macOS menu bar plugin that shows how much of your organisation's **monthly Claude usage-credit budget** you've spent, read live from your own claude.ai session. Built for Claude Enterprise.
 
 ```
 ☁ 12%   ← in your menu bar
 ```
 
-## What this actually measures
+## What this measures
 
-This tracks **extra usage credits** — the spend that kicks in *after* you exhaust your plan's included limits. In Claude's own words:
+Your organisation's **monthly usage-credit budget**, and how much of it you've spent. `☁ 12%` means 12% of this month's credit allowance is gone.
 
-> Usage credits cover you when you hit your plan limits.
+This is built for **Claude Enterprise** accounts, where there are no 5-hour or weekly rate-limit windows. The credit budget is therefore the one ceiling you can actually run into, which makes it the number worth putting in a menu bar. The widget deliberately reads nothing else.
 
-So `☁ 12%` means *"I've used 12% of my monthly extra-usage budget"*, **not** "I've used 12% of my Claude plan".
+<details>
+<summary>If you're not on Enterprise</summary>
 
-Two consequences worth knowing up front:
+On personal plans (Pro / Max) the same field exists but means something narrower — only the overage that begins once your plan's included usage is exhausted. Claude's own description of it is *"Usage credits cover you when you hit your plan limits."*
 
-- If you never exceed your plan limits, this sits near **0%** all month. That's the widget working, not failing.
-- It does **not** show your 5-hour or weekly rate limits — the ones that actually pause your session. Those live elsewhere in the same API response but are usually `null`, so the widget doesn't read them.
+On those plans the widget will usually read **0%** all month, because the thing that constrains you first is the 5-hour or weekly rate-limit window — and this widget does not read those. It'll work, it just won't tell you what you want to know.
 
-If what you want is "how close am I to being rate-limited", this is the wrong tool.
+</details>
 
 ## The dropdown
 
@@ -72,6 +72,7 @@ Rather than quietly showing an old number, the widget says what's wrong:
 ## Requirements
 
 - macOS
+- A **Claude Enterprise** account with usage credits enabled (see [What this measures](#what-this-measures))
 - [xbar](https://xbarapp.com) — free, direct download, not on the App Store
 - [Island browser](https://www.island.io), signed in to claude.ai
 - Python 3.6+ — `/usr/bin/python3` on macOS comes from the Xcode Command Line Tools. If you've ever run `git` or `xcode-select --install` you already have it; otherwise macOS will prompt on first use.
