@@ -7,7 +7,7 @@
 # <xbar.dependencies>python3,osascript</xbar.dependencies>
 #
 # Requires a claude.ai tab open in Island, and Island's
-# Develop ▸ Allow JavaScript from Apple Events to be enabled.
+# View → Developer → Allow JavaScript from Apple Events to be enabled.
 
 USAGE_URL="https://claude.ai/new#settings/usage"
 CACHE_FILE="$HOME/.claude-usage-cache.json"
@@ -120,7 +120,7 @@ def describe(code):
         "no_org":        "No organization found on this account",
         "no_result":     "Island returned nothing",
         "bad_response":  "claude.ai returned an unreadable response",
-        "applescript":   "Island blocked the query — enable Develop ▸ Allow JavaScript from Apple Events",
+        "applescript":   "Island blocked the query — enable View → Developer → Allow JavaScript from Apple Events",
     }
     if code in known:
         return known[code]
