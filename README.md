@@ -101,10 +101,12 @@ Rather than quietly showing an old number, the widget says what's wrong:
 
 **Using a different Chromium browser** — the plugin targets Island, but any Chromium browser with an AppleScript bridge works. Replace `tell application "Island"` with e.g. `tell application "Google Chrome"`, and change the `pgrep -x "Island"` guard to match the process name. The same *Allow JavaScript from Apple Events* setting must be enabled there too.
 
-**Uninstall** — delete the plugin and its cache:
+**Updating** — from v2.3 the plugin checks this repo once a day (a ~2 KB fetch of the script header). When a newer `xbar.version` exists on `main`, the dropdown shows **⬆ Update available — click to install**. Clicking downloads the new script, checks it (shebang, version header, `bash -n`), and only then replaces the installed copy; a failed download leaves it untouched. Nothing installs without that click. Earlier versions have no updater — re-run the install command once to get it.
+
+**Uninstall** — delete the plugin and its caches:
 ```bash
 rm ~/Library/Application\ Support/xbar/plugins/claude-usage.*.sh
-rm ~/.claude-usage-cache.json
+rm ~/.claude-usage-cache.json ~/.claude-usage-update.json
 ```
 
 ## Security

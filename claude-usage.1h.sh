@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>Claude Usage</xbar.title>
-# <xbar.version>v2.2</xbar.version>
+# <xbar.version>v2.3</xbar.version>
 # <xbar.author>Nicholas Soh</xbar.author>
 # <xbar.author.github>nicholas-soh</xbar.author.github>
 # <xbar.desc>Shows real Claude spend % in your menu bar via Island browser. Caches last value when no tab is open, and says why when it can't refresh.</xbar.desc>
@@ -11,6 +11,31 @@
 
 USAGE_URL="https://claude.ai/new#settings/usage"
 CACHE_FILE="$HOME/.claude-usage-cache.json"
+UPDATE_CACHE="$HOME/.claude-usage-update.json"
+REMOTE_URL="https://raw.githubusercontent.com/nicholas-soh/claude-usage-widget/main/claude-usage.1h.sh"
+SELF="$0"
+
+# One-click self-update, triggered from the dropdown (bash=$0 param1=--self-update).
+# The download is validated before it replaces anything: a failed or truncated
+# fetch leaves the installed copy untouched.
+if [ "${1:-}" = "--self-update" ]; then
+    notify() { osascript -e "display notification \"$1\" with title \"Claude Usage\"" >/dev/null 2>&1; }
+    new=$(mktemp "$(dirname "$SELF")/.claude-usage-update.XXXXXX") || exit 1
+    if curl -fsSL --max-time 20 "$REMOTE_URL" -o "$new" \
+        && head -1 "$new" | grep -q '^#!/usr/bin/env bash' \
+        && grep -q '^# <xbar.version>v' "$new" \
+        && bash -n "$new" 2>/dev/null; then
+        chmod +x "$new"
+        mv "$new" "$SELF"
+        rm -f "$UPDATE_CACHE"
+        notify "Updated to $(sed -n 's/^# <xbar.version>\(.*\)<\/xbar.version>/\1/p' "$SELF" | head -1)"
+    else
+        rm -f "$new"
+        notify "Update failed — check your connection and try again"
+    fi
+    exit 0
+fi
+
 TMPFILE=$(mktemp)
 ERRFILE=$(mktemp)
 trap 'rm -f "$TMPFILE" "$ERRFILE"' EXIT
@@ -74,14 +99,19 @@ fi  # end Island running check
 
 # Quoted heredoc: the Python below is opaque to bash, so a stray '$' in a
 # format string can't be eaten before Python sees it. Values come in via env.
-USAGE_URL="$USAGE_URL" CACHE_FILE="$CACHE_FILE" \
+USAGE_URL="$USAGE_URL" CACHE_FILE="$CACHE_FILE" UPDATE_CACHE="$UPDATE_CACHE" \
+REMOTE_URL="$REMOTE_URL" SELF="$SELF" \
 TMPFILE="$TMPFILE" ERRFILE="$ERRFILE" python3 << 'PYEOF'
-import datetime, json, os, sys, tempfile, time
+import datetime, json, os, re, sys, tempfile, time, urllib.request
 
 USAGE_URL  = os.environ["USAGE_URL"]
 CACHE_FILE = os.environ["CACHE_FILE"]
 TMPFILE    = os.environ["TMPFILE"]
 ERRFILE    = os.environ["ERRFILE"]
+UPDATE_CACHE = os.environ["UPDATE_CACHE"]
+REMOTE_URL   = os.environ["REMOTE_URL"]
+SELF         = os.environ["SELF"]
+UPDATE_CHECK_EVERY = 24 * 3600
 
 BAR_LEN = 10
 
@@ -132,6 +162,60 @@ def describe(code):
             return f"claude.ai {what} API returned {safe(status, 24)}"
     return safe(code)
 
+VERSION_RE = re.compile(r"^# <xbar\.version>v?([\d.]+)</xbar\.version>", re.M)
+
+def parse_version(text):
+    m = VERSION_RE.search(text)
+    return tuple(int(x) for x in m.group(1).split(".") if x) if m else None
+
+def available_update():
+    """Return the newer remote version as a string, or None.
+
+    Checks GitHub at most once a day and fails silent: an offline Mac or a
+    GitHub hiccup must never break or slow the menu bar. Nothing is installed
+    here — the user opts in by clicking the dropdown item.
+    """
+    try:
+        with open(SELF) as f:
+            local = parse_version(f.read(2048))
+    except Exception:
+        return None
+    if not local:
+        return None
+
+    cache = {}
+    try:
+        with open(UPDATE_CACHE) as f:
+            cache = json.load(f)
+    except Exception:
+        pass
+
+    latest = cache.get("latest")
+    if time.time() - cache.get("checked", 0) > UPDATE_CHECK_EVERY:
+        try:
+            with urllib.request.urlopen(REMOTE_URL, timeout=4) as r:
+                remote = parse_version(r.read(2048).decode("utf-8", "replace"))
+            latest = ".".join(map(str, remote)) if remote else None
+            with open(UPDATE_CACHE, "w") as f:
+                json.dump({"checked": time.time(), "latest": latest}, f)
+        except Exception:
+            pass  # keep the last known value; retry on the next run
+
+    try:
+        latest_t = tuple(int(x) for x in latest.split(".")) if latest else None
+    except Exception:
+        latest_t = None
+    if latest_t and latest_t > local:
+        return latest
+    return None
+
+def print_update_item():
+    latest = available_update()
+    if latest:
+        print("---")
+        print(f"⬆ Update available: v{latest} — click to install | "
+              f'bash="{SELF}" param1=--self-update terminal=false refresh=true color=#3b82f6')
+
 def render(pct, used, limit, currency, cached=False, as_of=None, reason=None, notes=()):
     # Thresholds and bar both read the displayed value, so 50.4% can't
     # render green under a "<= 50" rule.
@@ -155,6 +239,7 @@ def render(pct, used, limit, currency, cached=False, as_of=None, reason=None, no
     print("---")
     print(f"Open Usage Page | href={USAGE_URL} color=#3b82f6")
     print("Refresh | refresh=true color=#6b7280")
+    print_update_item()
 
 def load_cache():
     try:
@@ -184,6 +269,7 @@ def show_unavailable(note, label="☁ —"):
     print("---")
     print(f"Open Usage Page | href={USAGE_URL} color=#3b82f6")
     print("Refresh | refresh=true color=#6b7280")
+    print_update_item()
 
 def show_fallback(code):
     reason = describe(code)
