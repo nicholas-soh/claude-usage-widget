@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>Claude Usage</xbar.title>
-# <xbar.version>v2.3</xbar.version>
+# <xbar.version>v2.4</xbar.version>
 # <xbar.author>Nicholas Soh</xbar.author>
 # <xbar.author.github>nicholas-soh</xbar.author.github>
 # <xbar.desc>Shows real Claude spend % in your menu bar via Island browser. Caches last value when no tab is open, and says why when it can't refresh.</xbar.desc>
@@ -168,6 +168,13 @@ def parse_version(text):
     m = VERSION_RE.search(text)
     return tuple(int(x) for x in m.group(1).split(".") if x) if m else None
 
+def local_version():
+    try:
+        with open(SELF) as f:
+            return parse_version(f.read(2048))
+    except Exception:
+        return None
+
 def available_update():
     """Return the newer remote version as a string, or None.
 
@@ -175,11 +182,7 @@ def available_update():
     GitHub hiccup must never break or slow the menu bar. Nothing is installed
     here — the user opts in by clicking the dropdown item.
     """
-    try:
-        with open(SELF) as f:
-            local = parse_version(f.read(2048))
-    except Exception:
-        return None
+    local = local_version()
     if not local:
         return None
 
@@ -211,10 +214,13 @@ def available_update():
 
 def print_update_item():
     latest = available_update()
+    local = local_version()
+    print("---")
     if latest:
-        print("---")
         print(f"⬆ Update available: v{latest} — click to install | "
               f'bash="{SELF}" param1=--self-update terminal=false refresh=true color=#3b82f6')
+    if local:
+        print(f"Claude Usage Widget v{'.'.join(map(str, local))} | color=#6b7280 size=11")
 
 def render(pct, used, limit, currency, cached=False, as_of=None, reason=None, notes=()):
     # Thresholds and bar both read the displayed value, so 50.4% can't
