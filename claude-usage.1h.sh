@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # <xbar.title>Claude Usage</xbar.title>
-# <xbar.version>v2.4</xbar.version>
+# <xbar.version>v2.5</xbar.version>
 # <xbar.author>Nicholas Soh</xbar.author>
 # <xbar.author.github>nicholas-soh</xbar.author.github>
 # <xbar.desc>Shows real Claude spend % in your menu bar via Island browser. Caches last value when no tab is open, and says why when it can't refresh.</xbar.desc>
@@ -353,13 +353,23 @@ if enabled is False:
     show_unavailable(why, label="☁ off")
     sys.exit(0)
 
-utilization = extra.get("utilization")
-if utilization is None:
-    die("bad_response")
-
 used     = extra.get("used_credits")
 limit    = extra.get("monthly_limit")
 currency = extra.get("currency", "USD")
+
+# extra_usage can be null, and spend carries the same figures, so fall back to it.
+if used is None:
+    used = (spend.get("used") or {}).get("amount_minor")
+if limit is None:
+    limit = (spend.get("limit") or {}).get("amount_minor")
+
+utilization = extra.get("utilization")
+if utilization is None:
+    # A new billing cycle can report null utilization before any spend: that is 0%.
+    # With no limit there is nothing to divide by, so it stays an error.
+    if not limit:
+        die("bad_response")
+    utilization = (used or 0) / limit * 100
 
 pct   = round(utilization, 1)
 used  = used / scale if used is not None else None
